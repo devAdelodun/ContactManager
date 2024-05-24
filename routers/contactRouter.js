@@ -1,6 +1,6 @@
 import express from "express";
 import { 
-    creatContact,
+    createContact,
     deleteContact,
     getAllContacts,
     getContact,
@@ -11,7 +11,7 @@ import validateToken  from "../middleware/validateTokenHandler.js";
 const contactRouter = express.Router();
 
 contactRouter.use(validateToken);
-contactRouter.route("/").get(getAllContacts).post(creatContact);
+contactRouter.route("/").get(getAllContacts).post(createContact);
 contactRouter.route("/:id").get(getContact).put(updateContact).delete(deleteContact);
 
 

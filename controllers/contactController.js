@@ -1,42 +1,49 @@
-import ah from "express-async-handler";
+import asyncHandler from "express-async-handler";
 import Contact from "../models/contactModel.js";
 
 
-export const getAllContacts = ah(async(req, res) => {
-    const contacts = await Contact.find({ user_id: req.user.id });
-    res.status(200).json(contacts)
+export const getAllContacts = asyncHandler(async (req, res) => {
+    const contacts = await Contact.find({ user_Id: req.user.id });
+    res.status(200).json(contacts);
 });
 
-export const creatContact = ah(async(req, res) => {
-    const {name, email, phone} = req.body;
-    if(!name ||!email || !phone) {
-        res.status(400)
-        throw new Error("All field are required")
+export const createContact = asyncHandler(async (req, res) => {
+    const { name, email, phone } = req.body;
+
+    console.log("Request Body:", req.body); 
+
+    if (!name || !email || !phone) {
+        res.status(400);
+        throw new Error("All fields are required");
     }
 
     const contact = await Contact.create({
         name,
-        email, 
+        email,
         phone,
-        user_id: req.user.id,
-    })
-    res.status(201).json(contact)
-})
+        user_Id: req.user.id, 
+    });
 
-export const getContact = ah(async(req,res)=> {
-    const contact = await Contact.findById(req.params.id)
-    if(!contact) {
-        res.status(404);
-        throw new Error("Contact not found")
-    }
-    res.status(200).json(contact)
-})
+    console.log("Contact Created:", contact);
 
-export const updateContact = ah(async(req, res) => {
+    res.status(201).json(contact);
+});
+
+export const getContact = asyncHandler(async (req, res) => {
     const contact = await Contact.findById(req.params.id);
-    if(!contact) {
+    if (!contact) {
         res.status(404);
-        throw new Error("Contact not found")
+        throw new Error("Contact not found");
+    }
+    res.status(200).json(contact);
+});
+
+
+export const updateContact = asyncHandler(async (req, res) => {
+    const contact = await Contact.findById(req.params.id);
+    if (!contact) {
+        res.status(404);
+        throw new Error("Contact not found");
     }
 
     if (contact.user_Id.toString() !== req.user.id) {
@@ -48,23 +55,24 @@ export const updateContact = ah(async(req, res) => {
         req.params.id,
         req.body,
         { new: true }
-    )
+    );
 
-    res.status(200).json(updatedContact)
-})
+    res.status(200).json(updatedContact);
+});
 
-export const deleteContact = ah(async (req, res) => {
+
+export const deleteContact = asyncHandler(async (req, res) => {
     const contact = await Contact.findById(req.params.id);
-    if(!contact) {
+    if (!contact) {
         res.status(404);
-        throw new Error("Contact not found")
+        throw new Error("Contact not found");
     }
 
     if (contact.user_Id.toString() !== req.user.id) {
         res.status(403);
-        throw new Error("User doesn't have permission update contacts");
+        throw new Error("User doesn't have permission to delete this contact");
     }
 
-    await Contact.deleteOne({_id: req.params.id});
-    res.status(200).send("Contact deleted")
-})
+    await Contact.deleteOne({ _id: req.params.id });
+    res.status(200).send("Contact deleted");
+});

@@ -1,4 +1,3 @@
-// constants.js
 export const constants = {
     NOT_FOUND: 404,
     SERVER_ERROR: 500,

@@ -1,43 +1,31 @@
 import { constants } from "../constants.js";
 
-
 export const errorHandler = (err, req, res, next) => {
     const statusCode = res.statusCode || 500;
 
+    const errorResponse = {
+        title: "",
+        message: err.message,
+        stackTrace: err.stack
+    };
+
     switch (statusCode) {
         case constants.BAD_REQUEST:
-            res.json({
-                title: "Bad Request",
-                message: err.message,
-                stackTrace: err.stack
-            })
+            errorResponse.title = "Bad Request";
             break;
         case constants.NOT_FOUND:
-            res.json({
-                title: "Not Found",
-                message: err.message,
-                stackTrace: err.stack
-            })
+            errorResponse.title = "Not Found";
             break;
         case constants.FORBIDDEN:
-            res.json({
-                title: "Forbidden",
-                message: err.message,
-                stackTrace: err.stack
-            })
+            errorResponse.title = "Forbidden";
             break;
         case constants.SERVER_ERROR:
-            res.json({
-                title: "Server Error",
-                message: err.message,
-                stackTrace: err.stack
-            })
+            errorResponse.title = "Server Error";
             break;
-    
         default:
             console.log("All good, no error.");
-            break;
+            return res.end();
     }
 
-
-}
+    res.json(errorResponse);
+};
